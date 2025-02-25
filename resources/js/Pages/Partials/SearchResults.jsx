@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "@inertiajs/react";
 
 export default function SearchResults({ shops, onSelectShop }) {
     return (
@@ -28,6 +29,12 @@ export default function SearchResults({ shops, onSelectShop }) {
                             <p className="text-sm text-gray-600 lg:text-xs xl:text-base">
                                 {shop.access}
                             </p>
+                            <Link
+                                href={`/shop/${shop.id}`}
+                                className="text-blue-500"
+                            >
+                                もっと見る
+                            </Link>
                         </div>
                     </div>
                 ))}
