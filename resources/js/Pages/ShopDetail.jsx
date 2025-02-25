@@ -109,7 +109,6 @@ export default function ShopDetail() {
                     </div>
                 </div>
             </div>
-
             <div className="border-b-2 border-orange-500 pb-4 mb-4">
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     基本情報
@@ -128,7 +127,6 @@ export default function ShopDetail() {
                     </div>
                 </div>
             </div>
-
             <div className="border-b-2 border-orange-500 pb-4 mb-4">
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     アクセス情報
@@ -161,7 +159,6 @@ export default function ShopDetail() {
                     )}
                 </div>
             </div>
-
             <div className="border-b-2 border-orange-500 pb-4 mb-4">
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     料金情報
@@ -169,7 +166,6 @@ export default function ShopDetail() {
                 <p>予算: {shop.budget.average || "情報なし"}</p>
                 {shop.budget_memo && <p>料金備考: {shop.budget_memo}</p>}
             </div>
-
             <div className="border-b-2 border-orange-500 pb-4 mb-4">
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     設備・特徴
@@ -185,7 +181,6 @@ export default function ShopDetail() {
                 <p>バリアフリー: {shop.barrier_free}</p>
                 {shop.other_memo && <p>その他: {shop.other_memo}</p>}
             </div>
-
             <div className="border-b-2 border-orange-500 pb-4 mb-4">
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     オプション
@@ -263,6 +258,11 @@ export default function ShopDetail() {
                     )}
                 </div>
             </div>
+            Powered by{" "}
+            <a href="http://webservice.recruit.co.jp/">
+                ホットペッパーグルメ Webサービス
+            </a>
+            <p>【画像提供：ホットペッパー グルメ】</p>
         </div>
     );
 }

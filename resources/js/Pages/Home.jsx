@@ -58,7 +58,6 @@ export default function Home() {
     return (
         <>
             <Head title="ホーム" />
-
             <div className="container mx-auto p-4 flex flex-col lg:flex-row gap-4">
                 {/* 左側：検索結果リスト */}
                 <div
@@ -109,6 +108,15 @@ export default function Home() {
                         )}
                     </div>
                 </div>
+            </div>
+            <div className="text-right mt-4 mr-4">
+                <p>
+                    Powered by{" "}
+                    <a href="http://webservice.recruit.co.jp/">
+                        ホットペッパーグルメ Webサービス
+                    </a>
+                </p>
+                <p>【画像提供：ホットペッパー グルメ】</p>
             </div>
         </>
     );
