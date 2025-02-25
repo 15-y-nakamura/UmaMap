@@ -8,35 +8,62 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/hotpepper', function (Request $request) {
+Route::get('/shop', function (Request $request) {
     $apiKey = env('HOTPEPPER_GOURMET_API_KEY');
-    $latitude = $request->query('lat');
-    $longitude = $request->query('lng');
+    $lat = $request->query('lat');
+    $lng = $request->query('lng');
     $range = $request->query('range');
-    $results = [];
-    $page = 1;
+    $budget = $request->query('budget');
+    $genre = $request->query('genre');
+
+    $shops = [];
+    $page = 1; //ページ番号（1ページ目からスタート）
+    $maxRequest = 100; //APIの仕様で1回のリクエストで最大100件まで取得可能
 
     do {
+        //APIの仕様上、1回で100件までしか取れないため、ページを増やして全件取得する必要がある
+        //特に都心部で広範囲の検索をすると100件では足りないことが多い！
         $params = [
             'key' => $apiKey,
-            'lat' => $latitude,
-            'lng' => $longitude,
+            'lat' => $lat,
+            'lng' => $lng,
             'range' => $range,
             'format' => 'json',
-            'start' => ($page - 1) * 10 + 1,
+            'count' => $maxRequest,
+            //API の仕様上、1回で100件までしか取れないため、ページを増やして全件取得する必要がある
+            //100件ずつ取得するため、start はページ番号 * 100 になる
+            //例:2回目(page=2)→start=101（101件目から）
+            'start' => ($page - 1) * $maxRequest + 1,
         ];
 
-        $response = Http::get('http://webservice.recruit.co.jp/hotpepper/gourmet/v1/', $params);
-
-        $data = $response->json();
-        if (isset($data['results']['shop'])) {
-            $results = array_merge($results, $data['results']['shop']);
+        // 予算が指定されている場合
+        if ($budget) {
+            $params['budget'] = $budget;
         }
-        $page++;
-    } while (isset($data['results']['results_available']) && count($results) < $data['results']['results_available']);
 
-    return response()->json(['results' => ['shop' => $results]]);
+        // ジャンルが指定されている場合
+        if ($genre) {
+            $params['genre'] = $genre;
+        }
+
+        $response = Http::get('http://webservice.recruit.co.jp/hotpepper/gourmet/v1/', $params);
+        $data = $response->json();
+
+        // 取得した店舗データがある場合のみ追加
+        if (!empty($data['results']['shop'])) {
+            $shops = array_merge($shops, $data['results']['shop']);
+        }
+
+        // API が返した検索結果の合計件数
+        $totalAvailable = $data['results']['results_available'] ?? 0;
+
+        $page++; // 次のページへ
+
+    } while (count($shops) < $totalAvailable && count($shops) < 1000); // 1000件取得制限（負荷対策）
+
+    return response()->json(['results' => ['shop' => $shops]]);
 });
+
 
 Route::get('/shop/{id}', function ($id) {
     $apiKey = env('HOTPEPPER_GOURMET_API_KEY');
@@ -49,7 +76,6 @@ Route::get('/shop/{id}', function ($id) {
     $response = Http::get('http://webservice.recruit.co.jp/hotpepper/gourmet/v1/', $params);
     $data = $response->json();
     //0番目のデータを取得
-    //[0] を抜いた場合、配列全体が返されるため、shop.lat や shop.lng が正しく取得できなかった
     $shop = $data['results']['shop'][0];
     return response()->json($shop);
 });
