@@ -37,3 +37,19 @@ Route::get('/hotpepper', function (Request $request) {
 
     return response()->json(['results' => ['shop' => $results]]);
 });
+
+Route::get('/shop/{id}', function ($id) {
+    $apiKey = env('HOTPEPPER_GOURMET_API_KEY');
+    $params = [
+        'key' => $apiKey,
+        'id' => $id,
+        'format' => 'json',
+    ];
+
+    $response = Http::get('http://webservice.recruit.co.jp/hotpepper/gourmet/v1/', $params);
+    $data = $response->json();
+    //0番目のデータを取得
+    //[0] を抜いた場合、配列全体が返されるため、shop.lat や shop.lng が正しく取得できなかった
+    $shop = $data['results']['shop'][0];
+    return response()->json($shop);
+});

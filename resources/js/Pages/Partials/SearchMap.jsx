@@ -8,6 +8,7 @@ import {
     useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { Link } from "@inertiajs/react";
 
 // マップの位置とズームレベルを更新
 function MapUpdater({ position, radius }) {
@@ -70,6 +71,9 @@ function ShopMarker({ shop, isSelected }) {
                     ) : (
                         <p className="text-gray-500">画像がありません</p>
                     )}
+                    <Link href={`/shop/${shop.id}`} className="text-blue-500">
+                        もっと見る
+                    </Link>
                 </div>
             </Popup>
         </Marker>
