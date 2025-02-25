@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { usePage } from "@inertiajs/react";
+import { usePage, Head } from "@inertiajs/react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -8,24 +8,35 @@ export default function ShopDetail() {
     const { shopId } = props;
     const [shop, setShop] = useState(null);
 
-    useEffect(() => {
-        const fetchShopDetails = async () => {
-            try {
-                const response = await fetch(`/api/shop/${shopId}`);
-                if (!response.ok) {
-                    throw new Error("応答がありません");
-                }
-                const data = await response.json();
-                setShop(data);
-            } catch (error) {
-                console.error("データ取得エラー:", error);
+    const getShopDetails = async () => {
+        try {
+            console.log("店舗情報を取得中...");
+            const response = await fetch(`/api/shop/${shopId}`);
+            if (!response.ok) {
+                throw new Error("データの取得に失敗しました");
             }
-        };
-        fetchShopDetails();
+            const data = await response.json();
+            console.log("取得したデータ:", data);
+            setShop(data);
+        } catch (error) {
+            alert("店舗情報を取得できませんでした。");
+            console.log("データ取得エラー:", error);
+        }
+    };
+
+    useEffect(() => {
+        getShopDetails();
     }, [shopId]);
 
     if (!shop) {
-        return <div>読み込み中</div>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Head title="店舗情報" />
+                <div className="flex justify-center" aria-label="読み込み中">
+                    <div className="animate-spin h-12 w-12 border-4 border-orange-400 rounded-full border-t-transparent"></div>
+                </div>
+            </div>
+        );
     }
 
     // オプションのカードの表示・非表示(灰色表示)を切り替える
@@ -34,9 +45,9 @@ export default function ShopDetail() {
 
         switch (true) {
             case !value:
-            case value === "なし":
-            case value === "不可":
-            case value === "営業していない":
+            case value == "なし":
+            case value == "不可":
+            case value == "営業していない":
             case value.startsWith("なし ："):
                 active = false;
                 break;
@@ -61,6 +72,7 @@ export default function ShopDetail() {
 
     return (
         <div className="max-w-4xl mx-auto p-4">
+            <Head title="店舗情報" />
             <div className="flex flex-wrap mb-4 border-b-2 border-orange-500 pb-4">
                 {shop.photo && (
                     <div className="w-full md:w-1/2 p-2">
@@ -76,11 +88,11 @@ export default function ShopDetail() {
                         {shop.name}
                     </h1>
                     <p>{shop.address}</p>
-                    <p>メインジャンル: {shop.genre?.name}</p>
+                    <p>メインジャンル: {shop.genre.name}</p>
                     {shop.sub_genre?.name && (
                         <p>サブジャンル: {shop.sub_genre.name}</p>
                     )}
-                    <p>キャッチコピー: {shop.catch}</p>
+                    <p>{shop.catch}</p>
                     <div className="flex mb-4">
                         {/* 昼の予算がある場合のみ表示 */}
                         {shop.budget?.lunch && (
@@ -121,15 +133,15 @@ export default function ShopDetail() {
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     アクセス情報
                 </h2>
-                <div className="w-full md:w-1/2 p-2">
+                <div className="w-full p-2">
                     <p>
-                        エリア: {shop.large_area?.name}：{shop.small_area?.name}
+                        エリア: {shop.large_area.name}：{shop.small_area.name}
                     </p>
                     <p>最寄り駅: {shop.station_name}</p>
                     <p>アクセス: {shop.access}</p>
                     <p>最短アクセス: {shop.mobile_access}</p>
                 </div>
-                <div className="w-full md:w-1/2 p-2">
+                <div className="w-full p-2">
                     {shop.lat && shop.lng ? (
                         <MapContainer
                             center={[shop.lat, shop.lng]}
@@ -154,7 +166,7 @@ export default function ShopDetail() {
                 <h2 className="text-xl font-bold mb-2 text-orange-600">
                     料金情報
                 </h2>
-                <p>予算: {shop.budget?.average}</p>
+                <p>予算: {shop.budget.average || "情報なし"}</p>
                 {shop.budget_memo && <p>料金備考: {shop.budget_memo}</p>}
             </div>
 

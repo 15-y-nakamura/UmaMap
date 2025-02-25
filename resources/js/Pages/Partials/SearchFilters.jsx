@@ -1,151 +1,194 @@
 import React, { useState } from "react";
 
 export default function SearchFilters({ onSearch }) {
-    const [radius, setRadius] = useState("");
-    const [selectedLocation, setSelectedLocation] = useState("current");
+    const [searchRange, setSearchRange] = useState("");
+    const [locationChoice, setLocationChoice] = useState("current");
+    const [budget, setBudget] = useState("");
+    const [genre, setGenre] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleSearch = async () => {
+        setLoading(true);
         let latitude, longitude;
 
-        if (selectedLocation === "current") {
+        if (locationChoice == "current") {
+            // 現在地の取得
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         latitude = position.coords.latitude;
                         longitude = position.coords.longitude;
-
-                        const response = await fetch(
-                            `/api/hotpepper?lat=${latitude}&lng=${longitude}&range=${radius}`
-                        );
-                        const data = await response.json();
-                        onSearch(
-                            latitude,
-                            longitude,
-                            radius,
-                            data.results.shop
-                        );
+                        await fetchShopData(latitude, longitude);
+                        setLoading(false);
                     },
                     (error) => {
-                        alert("位置情報が取得できませんでした");
+                        alert(
+                            "位置情報が取得できませんでした。位置情報の設定を確認してください。"
+                        );
+                        setLoading(false);
                     }
                 );
             } else {
-                alert("このブラウザでは位置情報が取得できません");
+                alert("このブラウザでは位置情報が利用できません。");
+                setLoading(false);
             }
         } else {
-            switch (selectedLocation) {
-                case "tokyo":
-                    latitude = 35.6895;
-                    longitude = 139.6917;
-                    break;
-                case "osaka":
-                    latitude = 34.6937;
-                    longitude = 135.5023;
-                    break;
-                case "nagoya":
-                    latitude = 35.1815;
-                    longitude = 136.9066;
-                    break;
-                case "fukuoka":
-                    latitude = 33.5902;
-                    longitude = 130.4017;
-                    break;
-                default:
-                    return;
-            }
+            // 固定エリアの座標設定
+            const locationMap = {
+                tokyo: { lat: 35.6895, lng: 139.6917 },
+                osaka: { lat: 34.6937, lng: 135.5023 },
+                nagoya: { lat: 35.1815, lng: 136.9066 },
+                fukuoka: { lat: 33.5902, lng: 130.4017 },
+            };
 
-            const response = await fetch(
-                `/api/hotpepper?lat=${latitude}&lng=${longitude}&range=${radius}`
-            );
-            const data = await response.json();
-            onSearch(latitude, longitude, radius, data.results.shop);
+            if (locationMap[locationChoice]) {
+                latitude = locationMap[locationChoice].lat;
+                longitude = locationMap[locationChoice].lng;
+                await fetchShopData(latitude, longitude);
+                setLoading(false);
+            } else {
+                alert("無効なエリアが選択されました。");
+                setLoading(false);
+            }
         }
     };
 
+    const fetchShopData = async (lat, lng) => {
+        const response = await fetch(
+            `/api/shop?lat=${lat}&lng=${lng}&range=${searchRange}&budget=${budget}&genre=${genre}`
+        );
+        const data = await response.json();
+        onSearch(lat, lng, searchRange, data.results.shop);
+    };
+
     return (
-        <div className="w-full max-w-[1200px] xl:max-w-[1400px] mx-auto bg-gray-100 p-4 md:p-6 lg:p-4 xl:p-8 shadow-lg rounded-2xl mt-6 md:mt-8 mb-8 md:mb-10">
-            <h2 className="text-lg font-bold text-center mb-4 md:mb-6 lg:mb-4 xl:mb-8">
-                検索条件
-            </h2>
+        <div className="w-full bg-white p-4 shadow-md rounded-lg">
+            <h2 className="text-lg font-bold text-center mb-4">検索条件</h2>
 
-            <div className="flex flex-wrap md:flex-col lg:flex-row lg:justify-center items-center gap-4 md:gap-6 lg:gap-4 xl:gap-8 justify-center md:justify-start px-4 lg:px-8 xl:px-0">
+            <div className="flex flex-col gap-4">
                 {/* エリア選択 */}
-                <div className="relative border rounded-lg p-3 md:p-4 lg:p-3 xl:p-5 bg-white shadow-md flex flex-wrap md:flex-nowrap items-center gap-3 md:gap-4 lg:gap-3 xl:gap-5 w-full md:w-[80%] lg:w-auto">
-                    <span className="absolute top-[-8px] md:top-[-10px] lg:top-[-8px] xl:top-[-12px] left-4 bg-white px-2 text-xs text-gray-500">
-                        エリア
-                    </span>
-
-                    <div className="w-full md:w-auto">
-                        <label className="block text-sm font-semibold lg:text-xs xl:text-base">
-                            場所
-                        </label>
-                        <select
-                            className="w-full md:w-[160px] lg:w-[120px] xl:w-[180px] p-2 border rounded"
-                            value={selectedLocation}
-                            onChange={(e) =>
-                                setSelectedLocation(e.target.value)
-                            }
-                        >
-                            <option value="current">現在位置</option>
-                            <option value="tokyo">東京</option>
-                            <option value="osaka">大阪</option>
-                            <option value="nagoya">名古屋</option>
-                            <option value="fukuoka">福岡</option>
-                        </select>
-                    </div>
-
-                    <div className="w-full md:w-auto">
-                        <label className="block text-sm font-semibold lg:text-xs xl:text-base">
-                            検索範囲 (m)
-                        </label>
-                        <select
-                            className="w-full md:w-[120px] lg:w-[80px] xl:w-[140px] p-2 border rounded"
-                            value={radius}
-                            onChange={(e) =>
-                                setRadius(parseInt(e.target.value))
-                            }
-                        >
-                            <option value="">選択してください</option>
-                            <option value={1}>300</option>
-                            <option value={2}>500</option>
-                            <option value={3}>1000</option>
-                            <option value={4}>2000</option>
-                            <option value={5}>3000</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* 予算選択 */}
-                <div className="w-full md:w-[80%] lg:w-auto">
-                    <label className="block text-sm font-semibold lg:text-xs xl:text-base">
-                        予算
-                    </label>
-                    <select className="w-full md:w-[160px] lg:w-[120px] xl:w-[180px] p-2 border rounded">
-                        <option>〜1000円</option>
-                        <option>1000円〜3000円</option>
-                        <option>3000円〜5000円</option>
-                        <option>5000円以上</option>
+                <div className="flex flex-col gap-2">
+                    <label className="block text-sm font-semibold">場所</label>
+                    <select
+                        className="p-2 border rounded"
+                        value={locationChoice}
+                        onChange={(e) => setLocationChoice(e.target.value)}
+                    >
+                        <option value="current">現在位置</option>
+                        <option value="tokyo">東京</option>
+                        <option value="osaka">大阪</option>
+                        <option value="nagoya">名古屋</option>
+                        <option value="fukuoka">福岡</option>
                     </select>
                 </div>
 
-                {/* タグ検索 */}
-                <div className="w-full md:w-[80%] lg:w-auto">
-                    <label className="block text-sm font-semibold lg:text-xs xl:text-base">
-                        タグ
+                {/* 検索範囲 */}
+                <div className="flex flex-col gap-2">
+                    <label className="block text-sm font-semibold">
+                        検索範囲 (m)
                     </label>
-                    <input
-                        type="text"
-                        placeholder="例: 焼肉, カフェ"
-                        className="w-full md:w-[240px] lg:w-[200px] xl:w-[260px] p-2 border rounded"
-                    />
+                    <select
+                        className="p-2 border rounded"
+                        value={searchRange}
+                        onChange={(e) => setSearchRange(e.target.value)}
+                    >
+                        <option value="">選択してください(必須)</option>
+                        <option value="1">300</option>
+                        <option value="2">500</option>
+                        <option value="3">1000</option>
+                        <option value="4">2000</option>
+                        <option value="5">3000</option>
+                    </select>
+                </div>
+
+                {/* 予算選択 */}
+                <div className="flex flex-col gap-2">
+                    <label className="block text-sm font-semibold">予算</label>
+                    <select
+                        className="p-2 border rounded"
+                        value={budget}
+                        onChange={(e) => setBudget(e.target.value)}
+                    >
+                        <option value="">こだわらない</option>
+                        <option value="~500">～500円</option>
+                        <option value="501~1000">501～1000円</option>
+                        <option value="1001~1500">1001～1500円</option>
+                        <option value="1501~2000">1501～2000円</option>
+                        <option value="2001~3000">2001～3000円</option>
+                        <option value="3001~4000">3001～4000円</option>
+                        <option value="4001~5000">4001～5000円</option>
+                        <option value="5001~7000">5001～7000円</option>
+                        <option value="7001~10000">7001～10000円</option>
+                        <option value="10001~15000">10001～15000円</option>
+                        <option value="15001~20000">15001～20000円</option>
+                        <option value="20001~30000">20001～30000円</option>
+                        <option value="30001~">30001円～</option>
+                    </select>
+                </div>
+
+                {/* ジャンル検索 */}
+                <div className="flex flex-col gap-2">
+                    <label className="block text-sm font-semibold">
+                        ジャンル
+                    </label>
+                    <select
+                        className="p-2 border rounded"
+                        value={genre}
+                        onChange={(e) => setGenre(e.target.value)}
+                    >
+                        <option value="">お店のジャンルすべて</option>
+                        <option value="居酒屋">居酒屋</option>
+                        <option value="ダイニングバー・バル">
+                            ダイニングバー・バル
+                        </option>
+                        <option value="創作料理">創作料理</option>
+                        <option value="和食">和食</option>
+                        <option value="洋食">洋食</option>
+                        <option value="イタリアン・フレンチ">
+                            イタリアン・フレンチ
+                        </option>
+                        <option value="中華">中華</option>
+                        <option value="焼肉・ホルモン">焼肉・ホルモン</option>
+                        <option value="韓国料理">韓国料理</option>
+                        <option value="アジア・エスニック料理">
+                            アジア・エスニック料理
+                        </option>
+                        <option value="各国料理">各国料理</option>
+                        <option value="カラオケ・パーティ">
+                            カラオケ・パーティ
+                        </option>
+                        <option value="バー・カクテル">バー・カクテル</option>
+                        <option value="ラーメン">ラーメン</option>
+                        <option value="お好み焼き・もんじゃ">
+                            お好み焼き・もんじゃ
+                        </option>
+                        <option value="カフェ・スイーツ">
+                            カフェ・スイーツ
+                        </option>
+                        <option value="その他グルメ">その他グルメ</option>
+                    </select>
                 </div>
 
                 {/* 検索ボタン */}
                 <button
-                    className="bg-orange-500 text-white py-2 px-4 lg:py-1 lg:px-3 xl:py-3 xl:px-6 rounded hover:bg-orange-600 h-10 md:h-12 lg:h-8 xl:h-14 w-full md:w-[80%] lg:w-auto whitespace-nowrap"
+                    className={`py-2 px-4 rounded ${
+                        searchRange == ""
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-orange-500 text-white"
+                    }`}
                     onClick={handleSearch}
+                    disabled={searchRange == ""}
                 >
-                    検索
+                    {loading ? (
+                        <div
+                            className="flex justify-center"
+                            aria-label="読み込み中"
+                        >
+                            <div className="animate-spin h-6 w-6 border-4 border-white rounded-full border-t-transparent"></div>
+                        </div>
+                    ) : (
+                        "検索"
+                    )}
                 </button>
             </div>
         </div>
