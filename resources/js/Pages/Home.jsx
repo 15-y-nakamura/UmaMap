@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import SearchFilters from "./Partials/SearchFilters";
 import SearchMap from "./Partials/SearchMap";
 import SearchResults from "./Partials/SearchResults";
+import HeaderLayout from "../Layouts/HeaderLayout"; // 正しいパスに修正
 
 export default function Home() {
     // ユーザーの現在地
@@ -58,6 +59,7 @@ export default function Home() {
     return (
         <>
             <Head title="ホーム" />
+            <HeaderLayout />
             <div className="container mx-auto p-4 flex flex-col lg:flex-row gap-4">
                 {/* 左側：検索結果リスト */}
                 <div

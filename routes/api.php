@@ -3,10 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\UserTokenController;
+use App\Http\Controllers\Auth\LogoutController;
 
 Route::get('/shop', function (Request $request) {
     $apiKey = env('HOTPEPPER_GOURMET_API_KEY');
@@ -79,3 +79,15 @@ Route::get('/shop/{id}', function ($id) {
     $shop = $data['results']['shop'][0];
     return response()->json($shop);
 });
+
+// ログイン
+Route::post('/login', [LoginController::class, 'login']);
+
+// 新規登録
+Route::post('/register', [RegisterController::class, 'register']);
+
+// ユーザートークン
+Route::post('/user-token', [UserTokenController::class, 'userToken']);
+
+// ログアウト
+Route::post('/logout', [LogoutController::class, 'logout']);
