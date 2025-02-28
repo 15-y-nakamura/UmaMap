@@ -10,3 +10,11 @@ Route::get('/', function () {
 Route::get('/shop/{id}', function ($id) {
     return Inertia::render('ShopDetail', ['shopId' => $id]);
 });
+
+Route::get('/login', function () {
+    return Inertia::render('Auth/Login');
+});
+
+Route::get('/register', function () {
+    return Inertia::render('Auth/Register');
+});
