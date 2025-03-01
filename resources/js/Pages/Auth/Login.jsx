@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Head } from "@inertiajs/react";
 import axios from "axios";
+import HeaderLayout from "../../Layouts/HeaderLayout";
 
 export default function Login() {
     // フォームの状態管理
@@ -34,68 +35,77 @@ export default function Login() {
                 window.location.href = "/"; // ログイン成功後のリダイレクト
             }
         } catch (error) {
-            if (error.response?.data?.errors) {
-                setErrors({ login: error.response.data.errors });
-            }
+            setErrors({ login: error.response.data.errors });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <Head title="ログイン" />
-            <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
-                <h1 className="text-2xl font-bold mb-6 text-center">
-                    ログイン
-                </h1>
-                <form onSubmit={handleSubmit}>
-                    {["userId", "password"].map((name) => (
-                        <div className="mb-4" key={name}>
-                            <label
-                                className="block text-gray-700"
-                                htmlFor={name}
+        <div
+            className="min-h-screen bg-cover bg-center"
+            style={{ backgroundImage: "url('/img/login/login_bg.png')" }}
+        >
+            <HeaderLayout />
+            <div className="flex justify-center items-center min-h-screen bg-gray-100 bg-opacity-75">
+                <Head title="ログイン" />
+                <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
+                    <h1 className="text-2xl font-bold mb-6 text-center">
+                        ログイン
+                    </h1>
+                    <form onSubmit={handleSubmit}>
+                        {["userId", "password"].map((name) => (
+                            <div className="mb-4" key={name}>
+                                <label
+                                    className="block text-gray-700"
+                                    htmlFor={name}
+                                >
+                                    {name == "userId"
+                                        ? "ユーザーID"
+                                        : "パスワード"}
+                                </label>
+                                <input
+                                    id={name}
+                                    name={name}
+                                    type={
+                                        name == "password" ? "password" : "text"
+                                    }
+                                    value={data[name]}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-2 border rounded"
+                                />
+                                {errors[name] && (
+                                    <p className="text-red-500 mt-2">
+                                        {errors[name][0]}
+                                    </p>
+                                )}
+                            </div>
+                        ))}
+                        {errors.login && (
+                            <p className="text-red-500 mb-4">{errors.login}</p>
+                        )}
+                        <div className="flex flex-col items-center">
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-orange-500 text-white rounded mb-4 flex justify-center items-center"
+                                disabled={isSubmitting}
                             >
-                                {name == "userId" ? "ユーザーID" : "パスワード"}
-                            </label>
-                            <input
-                                id={name}
-                                name={name}
-                                type={name == "password" ? "password" : "text"}
-                                value={data[name]}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border rounded"
-                            />
-                            {errors[name] && (
-                                <p className="text-red-500 mt-2">
-                                    {errors[name][0]}
-                                </p>
-                            )}
+                                {isSubmitting ? (
+                                    <div
+                                        className="animate-spin h-6 w-6 border-4 border-white rounded-full border-t-transparent"
+                                        aria-label="読み込み中"
+                                    ></div>
+                                ) : (
+                                    "ログイン"
+                                )}
+                            </button>
+                            <div className="w-full border-t border-gray-300 mb-4"></div>
+                            <a href="/register" className="text-blue-500">
+                                新規登録はこちら
+                            </a>
                         </div>
-                    ))}
-                    {errors.login && (
-                        <p className="text-red-500 mb-4">{errors.login}</p>
-                    )}
-                    <div className="flex flex-col items-center">
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-orange-500 text-white rounded mb-4 flex justify-center items-center"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <div
-                                    className="animate-spin h-6 w-6 border-4 border-white rounded-full border-t-transparent"
-                                    aria-label="読み込み中"
-                                ></div>
-                            ) : (
-                                "ログイン"
-                            )}
-                        </button>
-                        <a href="/register" className="text-blue-500">
-                            新規登録はこちら
-                        </a>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     );

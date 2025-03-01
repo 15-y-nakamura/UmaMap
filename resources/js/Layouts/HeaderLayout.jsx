@@ -54,14 +54,9 @@ export default function HeaderLayout() {
         <div className="bg-gray-100">
             <nav className="border-b border-gray-100 bg-customPeach">
                 <div className="mx-auto max-w-8xl px-6 sm:px-8 lg:px-10">
-                    <div className="flex h-20 justify-between items-center">
-                        {/* ロゴ画像 */}
-                        <Link href="/">
-                            <img
-                                src="/img/logos/logo.png"
-                                alt="ロゴ"
-                                className="h-14"
-                            />
+                    <div className="flex h-24 justify-between items-center">
+                        <Link href="/" className="text-lg text-gray-800">
+                            うまマップ
                         </Link>
 
                         {/* PC用のナビゲーションメニュー */}
@@ -69,29 +64,53 @@ export default function HeaderLayout() {
                             {userId ? (
                                 <>
                                     <NavItem
+                                        href="/"
+                                        label="店舗検索"
+                                        img="/img/header/home.png"
+                                    />
+                                    <VerticalDivider />
+                                    <NavItem
                                         href="/history"
                                         label="うまー！履歴"
+                                        img="/img/common/uma.png"
                                     />
                                     <VerticalDivider />
                                     <button
                                         onClick={handleLogout}
-                                        className="text-lg text-gray-800 px-4 py-2"
+                                        className="text-lg text-gray-800 px-4 py-2 flex flex-col items-center"
                                     >
-                                        ログアウト
+                                        <img
+                                            src="/img/header/logout.png"
+                                            alt="ログアウト"
+                                            className="h-8"
+                                        />
+                                        <span>ログアウト</span>
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <NavItem href="/login" label="ログイン" />
+                                    <NavItem
+                                        href="/login"
+                                        label="ログイン"
+                                        img="/img/header/login.png"
+                                    />
                                     <VerticalDivider />
                                     <NavItem
                                         href="/register"
                                         label="新規登録"
+                                        img="/img/header/register.png"
+                                    />
+                                    <VerticalDivider />
+                                    <NavItem
+                                        href="/"
+                                        label="店舗検索"
+                                        img="/img/header/home.png"
                                     />
                                     <VerticalDivider />
                                     <NavItem
                                         href="/history"
                                         label="うまー！履歴"
+                                        img="/img/common/uma.png"
                                     />
                                 </>
                             )}
@@ -111,22 +130,55 @@ export default function HeaderLayout() {
                     <div className="sm:hidden bg-white p-4">
                         {userId ? (
                             <>
-                                <NavItem href="/history" label="うまー！履歴" />
+                                <NavItem
+                                    href="/"
+                                    label="店舗検索"
+                                    img="/img/header/home.png"
+                                />
+                                <VerticalDivider />
+                                <NavItem
+                                    href="/history"
+                                    label="うまー！履歴"
+                                    img="/img/common/uma.png"
+                                />
                                 <VerticalDivider />
                                 <button
                                     onClick={handleLogout}
-                                    className="text-lg text-gray-800 px-4 py-2"
+                                    className="text-lg text-gray-800 px-4 py-2 flex flex-col items-center"
                                 >
-                                    ログアウト
+                                    <img
+                                        src="/img/header/logout.png"
+                                        alt="ログアウト"
+                                        className="h-8"
+                                    />
+                                    <span>ログアウト</span>
                                 </button>
                             </>
                         ) : (
                             <>
-                                <NavItem href="/login" label="ログイン" />
+                                <NavItem
+                                    href="/login"
+                                    label="ログイン"
+                                    img="/img/header/login.png"
+                                />
                                 <VerticalDivider />
-                                <NavItem href="/register" label="新規登録" />
+                                <NavItem
+                                    href="/register"
+                                    label="新規登録"
+                                    img="/img/header/register.png"
+                                />
                                 <VerticalDivider />
-                                <NavItem href="/history" label="うまー！履歴" />
+                                <NavItem
+                                    href="/"
+                                    label="店舗検索"
+                                    img="/img/header/home.png"
+                                />
+                                <VerticalDivider />
+                                <NavItem
+                                    href="/history"
+                                    label="うまー！履歴"
+                                    img="/img/common/uma.png"
+                                />
                             </>
                         )}
                     </div>
@@ -137,10 +189,14 @@ export default function HeaderLayout() {
 }
 
 // メニューの項目
-function NavItem({ href, label }) {
+function NavItem({ href, label, img }) {
     return (
-        <Link href={href} className="text-lg text-gray-800 px-4 py-2">
-            {label}
+        <Link
+            href={href}
+            className="text-lg text-gray-800 px-4 py-2 flex flex-col items-center"
+        >
+            <img src={img} alt={label} className="h-8" />
+            <span>{label}</span>
         </Link>
     );
 }
