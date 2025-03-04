@@ -3,6 +3,7 @@ import { Head } from "@inertiajs/react";
 import axios from "axios";
 import HeaderLayout from "../../Layouts/HeaderLayout";
 import Spinner from "../../Components/Spinner";
+import PasswordInput from "../../Components/PasswordInput";
 
 export default function Login() {
     const [data, setData] = useState({
@@ -13,7 +14,7 @@ export default function Login() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 入力フィールドの値を更新する関数
+    // 入力フィールドの値を更新する
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -53,35 +54,40 @@ export default function Login() {
                         ログイン
                     </h1>
                     <form onSubmit={handleSubmit}>
-                        {["userId", "password"].map((name) => (
-                            <div className="mb-4" key={name}>
-                                <label
-                                    className="block text-gray-700"
-                                    htmlFor={name}
-                                >
-                                    {name === "userId"
-                                        ? "ユーザーID"
-                                        : "パスワード"}
-                                </label>
-                                <input
-                                    id={name}
-                                    name={name}
-                                    type={
-                                        name === "password"
-                                            ? "password"
-                                            : "text"
-                                    }
-                                    value={data[name]}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border rounded"
-                                />
-                                {errors[name] && (
-                                    <p className="mt-2 text-red-500">
-                                        {errors[name][0]}
-                                    </p>
-                                )}
-                            </div>
-                        ))}
+                        <div className="mb-4">
+                            <label
+                                className="block text-gray-700"
+                                htmlFor="userId"
+                            >
+                                ユーザーID
+                            </label>
+                            <input
+                                id="userId"
+                                name="userId"
+                                type="text"
+                                value={data.userId}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 border rounded"
+                            />
+                            {errors.userId && (
+                                <p className="mt-2 text-red-500">
+                                    {errors.userId[0]}
+                                </p>
+                            )}
+                        </div>
+                        <div className="mb-4">
+                            <label
+                                className="block text-gray-700"
+                                htmlFor="password"
+                            >
+                                パスワード
+                            </label>
+                            <PasswordInput
+                                value={data.password}
+                                onChange={handleChange}
+                                error={errors.password && errors.password[0]}
+                            />
+                        </div>
                         {errors.login && (
                             <p className="mb-4 text-red-500">{errors.login}</p>
                         )}
