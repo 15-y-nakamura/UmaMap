@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Head } from "@inertiajs/react";
 import axios from "axios";
 import HeaderLayout from "../../Layouts/HeaderLayout";
+import Spinner from "../../Components/Spinner";
 
 export default function Login() {
-    // フォームの状態管理
     const [data, setData] = useState({
         userId: "",
         password: "",
@@ -13,15 +13,15 @@ export default function Login() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 入力変更時の処理
+    // 入力フィールドの値を更新する関数
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setData((prevData) => ({
             ...prevData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         }));
     };
 
-    // フォーム送信時の処理
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
@@ -29,10 +29,9 @@ export default function Login() {
 
         try {
             const response = await axios.post("/api/login", data);
-            if (response.status == 200) {
-                // ログイン成功時にトークンをローカルストレージに保存
+            if (response.status === 200) {
                 localStorage.setItem("token", response.data.token);
-                window.location.href = "/"; // ログイン成功後のリダイレクト
+                window.location.href = "/";
             }
         } catch (error) {
             setErrors({ login: error.response.data.errors });
@@ -47,10 +46,10 @@ export default function Login() {
             style={{ backgroundImage: "url('/img/login/login_bg.png')" }}
         >
             <HeaderLayout />
-            <div className="flex justify-center items-center min-h-screen bg-gray-100 bg-opacity-75">
+            <div className="flex items-center justify-center min-h-screen bg-gray-100 bg-opacity-75">
                 <Head title="ログイン" />
-                <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
-                    <h1 className="text-2xl font-bold mb-6 text-center">
+                <div className="w-full p-6 bg-white rounded shadow-md sm:max-w-sm sm:p-6 md:max-w-md md:p-8 lg:max-w-lg lg:p-10">
+                    <h1 className="mb-6 text-xl font-bold text-center sm:text-xl md:text-2xl lg:text-3xl">
                         ログイン
                     </h1>
                     <form onSubmit={handleSubmit}>
@@ -60,7 +59,7 @@ export default function Login() {
                                     className="block text-gray-700"
                                     htmlFor={name}
                                 >
-                                    {name == "userId"
+                                    {name === "userId"
                                         ? "ユーザーID"
                                         : "パスワード"}
                                 </label>
@@ -68,38 +67,33 @@ export default function Login() {
                                     id={name}
                                     name={name}
                                     type={
-                                        name == "password" ? "password" : "text"
+                                        name === "password"
+                                            ? "password"
+                                            : "text"
                                     }
                                     value={data[name]}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border rounded"
                                 />
                                 {errors[name] && (
-                                    <p className="text-red-500 mt-2">
+                                    <p className="mt-2 text-red-500">
                                         {errors[name][0]}
                                     </p>
                                 )}
                             </div>
                         ))}
                         {errors.login && (
-                            <p className="text-red-500 mb-4">{errors.login}</p>
+                            <p className="mb-4 text-red-500">{errors.login}</p>
                         )}
                         <div className="flex flex-col items-center">
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-orange-500 text-white rounded mb-4 flex justify-center items-center"
+                                className="flex items-center justify-center px-4 py-2 mb-4 text-white bg-orange-500 rounded"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? (
-                                    <div
-                                        className="animate-spin h-6 w-6 border-4 border-white rounded-full border-t-transparent"
-                                        aria-label="読み込み中"
-                                    ></div>
-                                ) : (
-                                    "ログイン"
-                                )}
+                                {isSubmitting ? <Spinner /> : "ログイン"}
                             </button>
-                            <div className="w-full border-t border-gray-300 mb-4"></div>
+                            <div className="w-full mb-4 border-t border-gray-300"></div>
                             <a href="/register" className="text-blue-500">
                                 新規登録はこちら
                             </a>

@@ -1,5 +1,6 @@
 import { Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import { fetchUserId } from "../Components/UserToken";
 import axios from "axios";
 
 export default function HeaderLayout() {
@@ -7,34 +8,17 @@ export default function HeaderLayout() {
     const [userId, setUserId] = useState(null);
 
     useEffect(() => {
-        const fetchUserId = async () => {
-            const token = localStorage.getItem("token");
-            if (token) {
-                try {
-                    const response = await axios.post("/api/user-token", {
-                        token,
-                    });
-                    setUserId(response.data.user_id);
-                } catch (error) {
-                    console.error(
-                        "ユーザーIDの取得中にエラーが発生しました:",
-                        error
-                    );
-                }
-            } else {
-                console.log("トークンが見つかりませんでした。");
-            }
-        };
-
-        fetchUserId();
+        fetchUserId(setUserId);
     }, []);
 
-    // ハンバーガーメニューを開いたり閉じたりする関数
     const toggleMenu = () => setIsOpen(!isOpen);
 
-    // ログアウト処理
     const handleLogout = async () => {
-        const token = localStorage.getItem("token"); // ローカルストレージからトークン取得
+        if (!window.confirm("ログアウトしてもよろしいですか？")) {
+            return;
+        }
+
+        const token = localStorage.getItem("token");
 
         if (!token) {
             console.error("トークンが存在しません。");
@@ -42,8 +26,8 @@ export default function HeaderLayout() {
         }
 
         try {
-            await axios.post("/api/logout", { token }); // トークンをAPIに送信
-            localStorage.removeItem("token"); // ローカルストレージから削除
+            await axios.post("/api/logout", { token });
+            localStorage.removeItem("token");
             setUserId(null);
         } catch (error) {
             console.error("ログアウト処理中にエラーが発生しました:", error);
@@ -52,37 +36,39 @@ export default function HeaderLayout() {
 
     return (
         <div className="bg-gray-100">
-            <nav className="border-b border-gray-100 bg-customPeach">
-                <div className="mx-auto max-w-8xl px-6 sm:px-8 lg:px-10">
-                    <div className="flex h-24 justify-between items-center">
-                        <Link href="/" className="text-lg text-gray-800">
+            <nav className="bg-customPeach border-b border-gray-100">
+                <div className="mx-auto max-w-8xl px-3 sm:px-3 md:px-5 lg:px-6">
+                    <div className="flex justify-between items-center sm:h-16 md:h-20 lg:h-24">
+                        <Link
+                            href="/"
+                            className="text-gray-800 text-sm sm:text-sm md:text-base lg:text-lg"
+                        >
                             うまマップ
                         </Link>
 
-                        {/* PC用のナビゲーションメニュー */}
                         <div className="hidden sm:flex sm:items-center">
                             {userId ? (
                                 <>
                                     <NavItem
                                         href="/"
                                         label="店舗検索"
-                                        img="/img/header/home.png"
+                                        img="/img/header/shop.png"
                                     />
                                     <VerticalDivider />
                                     <NavItem
                                         href="/history"
                                         label="うまー！履歴"
-                                        img="/img/common/uma.png"
+                                        img="/img/header/uma.png"
                                     />
                                     <VerticalDivider />
                                     <button
                                         onClick={handleLogout}
-                                        className="text-lg text-gray-800 px-4 py-2 flex flex-col items-center"
+                                        className="flex flex-col items-center text-gray-800 text-sm sm:text-sm md:text-base lg:text-lg px-3 py-1.5"
                                     >
                                         <img
                                             src="/img/header/logout.png"
                                             alt="ログアウト"
-                                            className="h-8"
+                                            className="h-5 sm:h-5 md:h-6 lg:h-8"
                                         />
                                         <span>ログアウト</span>
                                     </button>
@@ -104,52 +90,50 @@ export default function HeaderLayout() {
                                     <NavItem
                                         href="/"
                                         label="店舗検索"
-                                        img="/img/header/home.png"
+                                        img="/img/header/shop.png"
                                     />
                                     <VerticalDivider />
                                     <NavItem
                                         href="/history"
                                         label="うまー！履歴"
-                                        img="/img/common/uma.png"
+                                        img="/img/header/uma.png"
                                     />
                                 </>
                             )}
                         </div>
 
-                        {/* スマホ用のハンバーガーメニュー */}
                         <div className="sm:hidden">
-                            <button onClick={toggleMenu} className="p-2">
+                            <button onClick={toggleMenu} className="p-1.5">
                                 {isOpen ? "✖" : "☰"}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* スマホ用メニュー（開いているときだけ表示） */}
                 {isOpen && (
-                    <div className="sm:hidden bg-white p-4">
+                    <div className="bg-white sm:hidden p-2 sm:p-2 md:p-3 lg:p-4">
                         {userId ? (
                             <>
                                 <NavItem
                                     href="/"
                                     label="店舗検索"
-                                    img="/img/header/home.png"
+                                    img="/img/header/shop.png"
                                 />
-                                <VerticalDivider />
+                                <HorizontalDivider />
                                 <NavItem
                                     href="/history"
                                     label="うまー！履歴"
-                                    img="/img/common/uma.png"
+                                    img="/img/header/uma.png"
                                 />
-                                <VerticalDivider />
+                                <HorizontalDivider />
                                 <button
                                     onClick={handleLogout}
-                                    className="text-lg text-gray-800 px-4 py-2 flex flex-col items-center"
+                                    className="flex flex-col items-center justify-center w-full text-center text-gray-800 text-sm sm:text-sm md:text-base lg:text-lg px-3 py-1.5"
                                 >
                                     <img
                                         src="/img/header/logout.png"
                                         alt="ログアウト"
-                                        className="h-8"
+                                        className="h-5 sm:h-5 md:h-6 lg:h-8"
                                     />
                                     <span>ログアウト</span>
                                 </button>
@@ -161,23 +145,23 @@ export default function HeaderLayout() {
                                     label="ログイン"
                                     img="/img/header/login.png"
                                 />
-                                <VerticalDivider />
+                                <HorizontalDivider />
                                 <NavItem
                                     href="/register"
                                     label="新規登録"
                                     img="/img/header/register.png"
                                 />
-                                <VerticalDivider />
+                                <HorizontalDivider />
                                 <NavItem
                                     href="/"
                                     label="店舗検索"
-                                    img="/img/header/home.png"
+                                    img="/img/header/shop.png"
                                 />
-                                <VerticalDivider />
+                                <HorizontalDivider />
                                 <NavItem
                                     href="/history"
                                     label="うまー！履歴"
-                                    img="/img/common/uma.png"
+                                    img="/img/header/uma.png"
                                 />
                             </>
                         )}
@@ -188,20 +172,24 @@ export default function HeaderLayout() {
     );
 }
 
-// メニューの項目
 function NavItem({ href, label, img }) {
     return (
         <Link
             href={href}
-            className="text-lg text-gray-800 px-4 py-2 flex flex-col items-center"
+            className="flex flex-col items-center text-gray-800 text-sm sm:text-sm md:text-base lg:text-lg px-3 py-1.5"
         >
-            <img src={img} alt={label} className="h-8" />
+            <img src={img} alt={label} className="h-5 sm:h-5 md:h-6 lg:h-8" />
             <span>{label}</span>
         </Link>
     );
 }
 
-// メニューの間に入れる縦線
 function VerticalDivider() {
-    return <div className="h-8 border-2 border-white mx-2"></div>;
+    return (
+        <div className="h-5 sm:h-5 md:h-6 lg:h-8 border-2 border-white mx-1.5"></div>
+    );
+}
+
+function HorizontalDivider() {
+    return <div className="w-full border-t-2 border-gray-200 my-1.5"></div>;
 }

@@ -4,19 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Inertia\Inertia;
-use Inertia\Response;
+use App\Models\Auth\User;
 use Exception;
-use App\Models\UserToken;
+use App\Models\Auth\UserToken;
 use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
-    /**
-     * 新規登録処理
-     */
     public function register(RegisterRequest $request)
     {
         try {
