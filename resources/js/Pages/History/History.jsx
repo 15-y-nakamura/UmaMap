@@ -3,13 +3,14 @@ import axios from "axios";
 import { Head } from "@inertiajs/react";
 import HeaderLayout from "../../Layouts/HeaderLayout";
 import Spinner from "../../Components/Spinner";
+import LoadingSpinner from "../../Components/LoadingSpinner";
 import { fetchUserId } from "../../Components/UserToken";
 
 export default function History() {
     const [shops, setShops] = useState([]);
     const [userId, setUserId] = useState(null);
     const [selectedShops, setSelectedShops] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [loadingDeleteSelected, setLoadingDeleteSelected] = useState(false);
 
     //useEffectが2つあるのは、
@@ -22,6 +23,7 @@ export default function History() {
         if (userId) {
             fetchUserLikes(userId);
         }
+        setLoading(false); // データ取得が完了したらloadingをfalseに設定
     }, [userId]);
 
     const fetchUserLikes = async (userId) => {
@@ -161,7 +163,13 @@ export default function History() {
                 </button>
                 <div className="my-3 border-b-2 border-orange-500 sm:my-4"></div>
                 <div className="overflow-y-auto max-h-[70vh]">
-                    {renderShops()}
+                    {loading ? (
+                        <div className="flex items-center justify-center w-full h-full">
+                            <LoadingSpinner />
+                        </div>
+                    ) : (
+                        renderShops()
+                    )}
                 </div>
             </div>
         </>

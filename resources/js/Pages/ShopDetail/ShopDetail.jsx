@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import HeaderLayout from "../../Layouts/HeaderLayout";
 import ShopLike from "./Partials/ShopLike";
-import Spinner from "../../Components/Spinner";
+import LoadingSpinner from "../../Components/LoadingSpinner";
 import Credit from "../../Components/Credit";
 import { fetchUserId } from "../../Components/UserToken";
 
@@ -13,6 +13,7 @@ export default function ShopDetail() {
     const { shopId } = props;
     const [shop, setShop] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchUserId(setUserId);
@@ -30,16 +31,13 @@ export default function ShopDetail() {
         } catch (error) {
             alert("店舗情報を取得できませんでした。");
             console.error("データ取得エラー:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    if (!shop) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <Head title="店舗情報" />
-                <Spinner size="h-12 w-12" color="border-orange-400" />
-            </div>
-        );
+    if (loading) {
+        return <LoadingSpinner />;
     }
 
     // オプションのカードの表示・非表示(灰色表示)を切り替える
