@@ -1,39 +1,41 @@
 import React, { useState } from "react";
+import Spinner from "../../../Components/Spinner";
 
 export default function SearchFilters({ onSearch }) {
-    const [searchRange, setSearchRange] = useState("");
     const [locationChoice, setLocationChoice] = useState("current");
+    const [searchRange, setSearchRange] = useState("");
     const [budget, setBudget] = useState("");
     const [genre, setGenre] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // 検索ボタンがクリックされたときの処理
     const handleSearch = async () => {
-        setLoading(true);
+        setLoading(true); // ローディング状態を開始
         let latitude, longitude;
 
-        if (locationChoice == "current") {
-            // 現在地の取得
+        if (locationChoice === "current") {
+            // 現在位置を使用する場合
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         latitude = position.coords.latitude;
                         longitude = position.coords.longitude;
-                        await fetchShopData(latitude, longitude);
-                        setLoading(false);
+                        await fetchShopData(latitude, longitude); // 店舗データを取得
+                        setLoading(false); // ローディング状態を終了
                     },
-                    (error) => {
+                    () => {
                         alert(
-                            "位置情報が取得できませんでした。位置情報の設定を確認してください。"
+                            "位置情報が取得できませんでした。設定を確認してください。"
                         );
-                        setLoading(false);
+                        setLoading(false); // ローディング状態を終了
                     }
                 );
             } else {
                 alert("このブラウザでは位置情報が利用できません。");
-                setLoading(false);
+                setLoading(false); // ローディング状態を終了
             }
         } else {
-            // 固定エリアの座標設定
+            // 選択された都市の位置情報を使用する場合
             const locationMap = {
                 tokyo: { lat: 35.6895, lng: 139.6917 },
                 osaka: { lat: 34.6937, lng: 135.5023 },
@@ -44,33 +46,37 @@ export default function SearchFilters({ onSearch }) {
             if (locationMap[locationChoice]) {
                 latitude = locationMap[locationChoice].lat;
                 longitude = locationMap[locationChoice].lng;
-                await fetchShopData(latitude, longitude);
-                setLoading(false);
+                await fetchShopData(latitude, longitude); // 店舗データを取得
+                setLoading(false); // ローディング状態を終了
             } else {
                 alert("無効なエリアが選択されました。");
-                setLoading(false);
+                setLoading(false); // ローディング状態を終了
             }
         }
     };
 
+    // 店舗データをAPIから取得する
     const fetchShopData = async (lat, lng) => {
         const response = await fetch(
             `/api/shop?lat=${lat}&lng=${lng}&range=${searchRange}&budget=${budget}&genre=${genre}`
         );
         const data = await response.json();
-        onSearch(lat, lng, searchRange, data.results.shop);
+        onSearch(lat, lng, searchRange, data.results.shop); // 取得したデータを親コンポーネントに渡す
     };
 
     return (
-        <div className="w-full bg-white p-4 shadow-md rounded-lg">
-            <h2 className="text-lg font-bold text-center mb-4">検索条件</h2>
+        <div className="w-full p-3 bg-orange-100 shadow-md rounded-lg sm:max-w-sm sm:p-4 md:max-w-md md:p-5 lg:max-w-lg lg:p-6">
+            <h2 className="mb-3 text-base font-bold text-center sm:mb-4 sm:text-lg md:text-xl lg:text-2xl">
+                検索条件
+            </h2>
 
-            <div className="flex flex-col gap-4">
-                {/* エリア選択 */}
-                <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-semibold">場所</label>
+            <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex flex-col gap-1">
+                    <label className="block text-xs font-semibold sm:text-sm md:text-base">
+                        場所
+                    </label>
                     <select
-                        className="p-2 border rounded"
+                        className="p-1.5 border rounded sm:p-2 md:p-3"
                         value={locationChoice}
                         onChange={(e) => setLocationChoice(e.target.value)}
                     >
@@ -82,13 +88,12 @@ export default function SearchFilters({ onSearch }) {
                     </select>
                 </div>
 
-                {/* 検索範囲 */}
-                <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-semibold">
+                <div className="flex flex-col gap-1">
+                    <label className="block text-xs font-semibold sm:text-sm md:text-base">
                         検索範囲 (m)
                     </label>
                     <select
-                        className="p-2 border rounded"
+                        className="p-1.5 border rounded sm:p-2 md:p-3"
                         value={searchRange}
                         onChange={(e) => setSearchRange(e.target.value)}
                     >
@@ -101,11 +106,12 @@ export default function SearchFilters({ onSearch }) {
                     </select>
                 </div>
 
-                {/* 予算選択 */}
-                <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-semibold">予算</label>
+                <div className="flex flex-col gap-1">
+                    <label className="block text-xs font-semibold sm:text-sm md:text-base">
+                        予算
+                    </label>
                     <select
-                        className="p-2 border rounded"
+                        className="p-1.5 border rounded sm:p-2 md:p-3"
                         value={budget}
                         onChange={(e) => setBudget(e.target.value)}
                     >
@@ -126,13 +132,12 @@ export default function SearchFilters({ onSearch }) {
                     </select>
                 </div>
 
-                {/* ジャンル検索 */}
-                <div className="flex flex-col gap-2">
-                    <label className="block text-sm font-semibold">
+                <div className="flex flex-col gap-1">
+                    <label className="block text-xs font-semibold sm:text-sm md:text-base">
                         ジャンル
                     </label>
                     <select
-                        className="p-2 border rounded"
+                        className="p-1.5 border rounded sm:p-2 md:p-3"
                         value={genre}
                         onChange={(e) => setGenre(e.target.value)}
                     >
@@ -169,26 +174,16 @@ export default function SearchFilters({ onSearch }) {
                     </select>
                 </div>
 
-                {/* 検索ボタン */}
                 <button
-                    className={`py-2 px-4 rounded ${
-                        searchRange == ""
+                    className={`py-1.5 px-3 rounded text-sm sm:py-2 sm:px-4 sm:text-base ${
+                        searchRange === ""
                             ? "bg-gray-400 cursor-not-allowed"
                             : "bg-orange-500 text-white"
                     }`}
                     onClick={handleSearch}
-                    disabled={searchRange == ""}
+                    disabled={searchRange === ""}
                 >
-                    {loading ? (
-                        <div
-                            className="flex justify-center"
-                            aria-label="読み込み中"
-                        >
-                            <div className="animate-spin h-6 w-6 border-4 border-white rounded-full border-t-transparent"></div>
-                        </div>
-                    ) : (
-                        "検索"
-                    )}
+                    {loading ? <Spinner /> : "検索"}
                 </button>
             </div>
         </div>

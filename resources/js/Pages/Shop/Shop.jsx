@@ -3,20 +3,17 @@ import { useState, useEffect } from "react";
 import SearchFilters from "./Partials/SearchFilters";
 import SearchMap from "./Partials/SearchMap";
 import SearchResults from "./Partials/SearchResults";
-import HeaderLayout from "../Layouts/HeaderLayout"; // 正しいパスに修正
+import HeaderLayout from "../../Layouts/HeaderLayout";
+import Credit from "../../Components/Credit";
 
-export default function Home() {
-    // ユーザーの現在地
+export default function Shop() {
     const [position, setPosition] = useState();
-    // 検索範囲
     const [searchRange, setSearchRange] = useState("");
-    // 検索結果の店舗リスト
     const [shops, setShops] = useState([]);
-    // ユーザーが選択した店舗
     const [selectedShop, setSelectedShop] = useState(null);
-    // 検索済みかどうかを判定するフラグ
     const [hasSearched, setHasSearched] = useState(false);
 
+    // 位置情報を取得
     const getUserLocation = () => {
         try {
             if (!navigator.geolocation) {
@@ -38,20 +35,19 @@ export default function Home() {
         }
     };
 
-    // 初回マウント時に位置情報を取得
     useEffect(() => {
         getUserLocation();
     }, []);
 
-    //searchRadius - 検索範囲、shopList - 取得した店舗データ
+    // 店舗検索
     const searchShops = (latitude, longitude, searchRadius, shopList) => {
         setPosition([latitude, longitude]);
         setSearchRange(searchRadius);
         setShops(shopList);
-        setHasSearched(true); //検索済みフラグをtrueに設定
+        setHasSearched(true); // 検索済みフラグをtrueに設定
     };
 
-    //shop - 選択された店舗
+    // 店舗選択
     const selectShop = (shop) => {
         setSelectedShop(shop);
     };
@@ -60,37 +56,38 @@ export default function Home() {
         <>
             <Head title="ホーム" />
             <HeaderLayout />
-            <div className="container mx-auto p-4 flex flex-col lg:flex-row gap-4">
-                {/* 左側：検索結果リスト */}
-                <div
-                    className={`w-full lg:w-1/2 h-[calc(180vh-100px)] p-4 rounded-lg ${
-                        hasSearched
-                            ? "bg-white"
-                            : "bg-gray-300 flex items-center justify-center"
-                    }`}
-                >
-                    {hasSearched ? (
-                        <SearchResults
-                            shops={shops}
-                            onSelectShop={selectShop}
-                        />
-                    ) : (
-                        <p className="text-gray-600">
-                            検索結果:検索条件を設定してください
-                        </p>
-                    )}
+            <div className="container mx-auto p-4 flex flex-col gap-4">
+                {/* 検索条件 */}
+                <div className="w-full flex justify-center">
+                    <SearchFilters onSearch={searchShops} />
                 </div>
 
-                {/* 右側：検索条件 + マップ */}
-                <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                    {/* 検索条件 */}
-                    <div className="w-full">
-                        <SearchFilters onSearch={searchShops} />
+                {/* 検索結果リストとマップを並べる */}
+                <div className="flex flex-col w-full gap-4 lg:flex-row">
+                    {/* 検索結果リスト */}
+                    <div
+                        className={`lg:w-1/2 xl:w-3/5 ${
+                            hasSearched
+                                ? "bg-white"
+                                : "bg-gray-300 flex items-center justify-center"
+                        }`}
+                    >
+                        {hasSearched ? (
+                            <SearchResults
+                                shops={shops}
+                                onSelectShop={selectShop}
+                                height="full"
+                            />
+                        ) : (
+                            <p className="p-10 text-sm text-center text-gray-600 md:text-base">
+                                検索結果: 検索条件を設定してください
+                            </p>
+                        )}
                     </div>
 
                     {/* マップ */}
                     <div
-                        className={`w-full flex-grow p-4 rounded-lg ${
+                        className={`lg:w-1/2 xl:w-2/5 ${
                             hasSearched
                                 ? "bg-white"
                                 : "bg-gray-300 flex items-center justify-center"
@@ -104,22 +101,14 @@ export default function Home() {
                                 selectedShop={selectedShop}
                             />
                         ) : (
-                            <p className="text-gray-600">
-                                マップ:検索条件を設定してください
+                            <p className="p-10 text-sm text-center text-gray-600 md:text-base">
+                                マップ: 検索条件を設定してください
                             </p>
                         )}
                     </div>
                 </div>
             </div>
-            <div className="text-right mt-4 mr-4">
-                <p>
-                    Powered by{" "}
-                    <a href="http://webservice.recruit.co.jp/">
-                        ホットペッパーグルメ Webサービス
-                    </a>
-                </p>
-                <p>【画像提供：ホットペッパー グルメ】</p>
-            </div>
+            <Credit />
         </>
     );
 }

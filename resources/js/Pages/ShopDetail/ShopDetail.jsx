@@ -2,40 +2,42 @@ import React, { useEffect, useState } from "react";
 import { usePage, Head } from "@inertiajs/react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import HeaderLayout from "../Layouts/HeaderLayout";
+import HeaderLayout from "../../Layouts/HeaderLayout";
+import ShopLike from "./Partials/ShopLike";
+import Spinner from "../../Components/Spinner";
+import Credit from "../../Components/Credit";
+import { fetchUserId } from "../../Components/UserToken";
 
 export default function ShopDetail() {
     const { props } = usePage();
     const { shopId } = props;
     const [shop, setShop] = useState(null);
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        fetchUserId(setUserId);
+        getShopDetails();
+    }, [shopId]);
 
     const getShopDetails = async () => {
         try {
-            console.log("店舗情報を取得中...");
             const response = await fetch(`/api/shop/${shopId}`);
             if (!response.ok) {
                 throw new Error("データの取得に失敗しました");
             }
             const data = await response.json();
-            console.log("取得したデータ:", data);
             setShop(data);
         } catch (error) {
             alert("店舗情報を取得できませんでした。");
-            console.log("データ取得エラー:", error);
+            console.error("データ取得エラー:", error);
         }
     };
 
-    useEffect(() => {
-        getShopDetails();
-    }, [shopId]);
-
     if (!shop) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex items-center justify-center h-screen">
                 <Head title="店舗情報" />
-                <div className="flex justify-center" aria-label="読み込み中">
-                    <div className="animate-spin h-12 w-12 border-4 border-orange-400 rounded-full border-t-transparent"></div>
-                </div>
+                <Spinner size="h-12 w-12" color="border-orange-400" />
             </div>
         );
     }
@@ -56,7 +58,7 @@ export default function ShopDetail() {
                 active = true;
                 break;
         }
-
+        // カードの状態に応じてスタイルを適用
         return (
             <div
                 className={`p-4 m-2 border rounded-lg shadow-lg flex items-center ${
@@ -75,10 +77,10 @@ export default function ShopDetail() {
         <>
             <Head title="店舗情報" />
             <HeaderLayout />
-            <div className="max-w-4xl mx-auto p-4">
-                <div className="flex flex-wrap mb-4 border-b-2 border-orange-500 pb-4">
+            <div className="max-w-4xl p-4 mx-auto">
+                <div className="flex flex-wrap pb-4 mb-4 border-b-2 border-orange-500">
                     {shop.photo && (
-                        <div className="w-full md:w-1/2 p-2">
+                        <div className="w-full p-2 md:w-1/2">
                             <img
                                 src={shop.photo.pc.l}
                                 alt={shop.name}
@@ -86,8 +88,8 @@ export default function ShopDetail() {
                             />
                         </div>
                     )}
-                    <div className="w-full md:w-1/2 p-2">
-                        <h1 className="text-2xl font-bold mb-4 text-orange-600">
+                    <div className="w-full p-2 md:w-1/2">
+                        <h1 className="mb-4 text-2xl font-bold text-orange-600">
                             {shop.name}
                         </h1>
                         <p>{shop.address}</p>
@@ -99,39 +101,38 @@ export default function ShopDetail() {
                         <div className="flex mb-4">
                             {/* 昼の予算がある場合のみ表示 */}
                             {shop.budget?.lunch && (
-                                <div className="bg-orange-500 text-white p-2 rounded mr-2">
+                                <div className="p-2 mr-2 text-white bg-orange-500 rounded">
                                     昼: {shop.budget.lunch}
                                 </div>
                             )}
                             {/* 夜の予算がある場合のみ表示 */}
                             {shop.budget?.dinner && (
-                                <div className="bg-blue-500 text-white p-2 rounded">
+                                <div className="p-2 text-white bg-blue-500 rounded">
                                     夜: {shop.budget.dinner}
                                 </div>
                             )}
                         </div>
                     </div>
+                    <ShopLike shopId={shopId} userId={userId} />
                 </div>
-                <div className="border-b-2 border-orange-500 pb-4 mb-4">
-                    <h2 className="text-xl font-bold mb-2 text-orange-600">
+                <div className="pb-4 mb-4 border-b-2 border-orange-500">
+                    <h2 className="mb-2 text-xl font-bold text-orange-600">
                         基本情報
                     </h2>
-                    <div className="flex flex-wrap mb-4">
-                        <div className="w-full md:w-1/2 p-2">
-                            <p>営業時間: {shop.open}</p>
-                            <p>定休日: {shop.close}</p>
-                            <p>収容人数: {shop.capacity}</p>
-                            <p>WiFi: {shop.wifi}</p>
-                            <p>喫煙: {shop.non_smoking}</p>
-                            <p>駐車場: {shop.parking}</p>
-                            {shop.shop_detail_memo && (
-                                <p>店舗からのメモ: {shop.shop_detail_memo}</p>
-                            )}
-                        </div>
+                    <div className="mb-4">
+                        <p>営業時間: {shop.open}</p>
+                        <p>定休日: {shop.close}</p>
+                        <p>収容人数: {shop.capacity}</p>
+                        <p>WiFi: {shop.wifi}</p>
+                        <p>喫煙: {shop.non_smoking}</p>
+                        <p>駐車場: {shop.parking}</p>
+                        {shop.shop_detail_memo && (
+                            <p>店舗からのメモ: {shop.shop_detail_memo}</p>
+                        )}
                     </div>
                 </div>
-                <div className="border-b-2 border-orange-500 pb-4 mb-4">
-                    <h2 className="text-xl font-bold mb-2 text-orange-600">
+                <div className="pb-4 mb-4 border-b-2 border-orange-500">
+                    <h2 className="mb-2 text-xl font-bold text-orange-600">
                         アクセス情報
                     </h2>
                     <div className="w-full p-2">
@@ -163,15 +164,15 @@ export default function ShopDetail() {
                         )}
                     </div>
                 </div>
-                <div className="border-b-2 border-orange-500 pb-4 mb-4">
-                    <h2 className="text-xl font-bold mb-2 text-orange-600">
+                <div className="pb-4 mb-4 border-b-2 border-orange-500">
+                    <h2 className="mb-2 text-xl font-bold text-orange-600">
                         料金情報
                     </h2>
                     <p>予算: {shop.budget.average || "情報なし"}</p>
                     {shop.budget_memo && <p>料金備考: {shop.budget_memo}</p>}
                 </div>
-                <div className="border-b-2 border-orange-500 pb-4 mb-4">
-                    <h2 className="text-xl font-bold mb-2 text-orange-600">
+                <div className="pb-4 mb-4 border-b-2 border-orange-500">
+                    <h2 className="mb-2 text-xl font-bold text-orange-600">
                         設備・特徴
                     </h2>
                     <p>最大宴会収容人数: {shop.party_capacity}</p>
@@ -185,88 +186,84 @@ export default function ShopDetail() {
                     <p>バリアフリー: {shop.barrier_free}</p>
                     {shop.other_memo && <p>その他: {shop.other_memo}</p>}
                 </div>
-                <div className="border-b-2 border-orange-500 pb-4 mb-4">
-                    <h2 className="text-xl font-bold mb-2 text-orange-600">
+                <div className="pb-4 mb-4 border-b-2 border-orange-500">
+                    <h2 className="mb-2 text-xl font-bold text-orange-600">
                         オプション
                     </h2>
                     <div className="flex flex-wrap">
                         {renderOptionCard(
                             "ウェディング",
                             shop.wedding,
-                            "/img/detail/wedding.png"
+                            "/img/shopDetail/wedding.png"
                         )}
                         {renderOptionCard(
                             "コース料理",
                             shop.course,
-                            "/img/detail/course.png"
+                            "/img/shopDetail/course.png"
                         )}
                         {renderOptionCard(
                             "飲み放題",
                             shop.free_drink,
-                            "/img/detail/free_drink.png"
+                            "/img/shopDetail/free_drink.png"
                         )}
                         {renderOptionCard(
                             "食べ放題",
                             shop.free_food,
-                            "/img/detail/free_food.png"
+                            "/img/shopDetail/free_food.png"
                         )}
                         {renderOptionCard(
                             "ショー",
                             shop.show,
-                            "/img/detail/show.png"
+                            "/img/shopDetail/show.png"
                         )}
                         {renderOptionCard(
                             "カラオケ",
                             shop.karaoke,
-                            "/img/detail/karaoke.png"
+                            "/img/shopDetail/karaoke.png"
                         )}
                         {renderOptionCard(
                             "バンド演奏",
                             shop.band,
-                            "/img/detail/band.png"
+                            "/img/shopDetail/band.png"
                         )}
                         {renderOptionCard(
                             "テレビ・プロジェクター",
                             shop.tv,
-                            "/img/detail/tv_projector.png"
+                            "/img/shopDetail/tv_projector.png"
                         )}
                         {renderOptionCard(
                             "ランチ",
                             shop.lunch,
-                            "/img/detail/lunch.png"
+                            "/img/shopDetail/lunch.png"
                         )}
                         {renderOptionCard(
                             "深夜営業",
                             shop.midnight,
-                            "/img/detail/midnight.png"
+                            "/img/shopDetail/midnight.png"
                         )}
                         {renderOptionCard(
                             "英語メニュー",
                             shop.english,
-                            "/img/detail/english.png"
+                            "/img/shopDetail/english.png"
                         )}
                         {renderOptionCard(
                             "ペット可",
                             shop.pet,
-                            "/img/detail/pet.png"
+                            "/img/shopDetail/pet.png"
                         )}
                         {renderOptionCard(
                             "子供連れOK",
                             shop.child,
-                            "/img/detail/child.png"
+                            "/img/shopDetail/child.png"
                         )}
                         {renderOptionCard(
                             "Wi-Fi",
                             shop.wifi,
-                            "/img/detail/wifi.png"
+                            "/img/shopDetail/wifi.png"
                         )}
                     </div>
                 </div>
-                Powered by{" "}
-                <a href="http://webservice.recruit.co.jp/">
-                    ホットペッパーグルメ Webサービス
-                </a>
-                <p>【画像提供：ホットペッパー グルメ】</p>
+                <Credit />
             </div>
         </>
     );

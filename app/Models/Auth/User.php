@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
 class User extends Model
 {
-    use HasFactory;
-
     const NORMAL_STATUS = 1;
     const DELETED_STATUS = 9;
 
@@ -32,11 +29,6 @@ class User extends Model
     protected $attributes = [
         'status' => self::NORMAL_STATUS,
     ];
-
-    public function isValid()
-    {
-        return $this->status == self::NORMAL_STATUS;
-    }
 
     public function user_token()
     {

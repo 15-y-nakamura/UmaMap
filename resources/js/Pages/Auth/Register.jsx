@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Head } from "@inertiajs/react";
 import axios from "axios";
 import HeaderLayout from "../../Layouts/HeaderLayout";
+import Spinner from "../../Components/Spinner";
 
 export default function Register() {
-    // フォームの状態管理
     const [data, setData] = useState({
         userId: "",
         nickname: "",
@@ -16,25 +16,26 @@ export default function Register() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 入力変更時の処理
+    // 入力フィールドの値を更新する関数
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setData((prevData) => ({
             ...prevData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         }));
     };
 
-    // フォーム送信時の処理
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({}); // 既存のエラーをクリア
+        setErrors({});
         setIsSubmitting(true);
 
         try {
             const response = await axios.post("/api/register", data);
-            // 新規登録成功時にトークンをローカルストレージに保存
-            localStorage.setItem("token", response.data.token);
-            window.location.href = "/"; // 登録成功後リダイレクト
+            if (response.status === 200) {
+                localStorage.setItem("token", response.data.token);
+                window.location.href = "/";
+            }
         } catch (error) {
             setErrors(error.response.data.errors);
         } finally {
@@ -42,7 +43,6 @@ export default function Register() {
         }
     };
 
-    // 入力フィールドの設定
     const fields = [
         { name: "userId", label: "ユーザーID", type: "text" },
         { name: "nickname", label: "ニックネーム", type: "text" },
@@ -61,10 +61,10 @@ export default function Register() {
             style={{ backgroundImage: "url('/img/register/register_bg.png')" }}
         >
             <HeaderLayout />
-            <div className="flex justify-center items-center min-h-screen bg-gray-100 bg-opacity-75">
+            <div className="flex items-center justify-center min-h-screen bg-gray-100 bg-opacity-75">
                 <Head title="新規登録" />
-                <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
-                    <h1 className="text-2xl font-bold mb-6 text-center">
+                <div className="w-full p-6 bg-white rounded shadow-md sm:max-w-sm sm:p-6 md:max-w-md md:p-8 lg:max-w-lg lg:p-10">
+                    <h1 className="mb-6 text-xl font-bold text-center sm:text-xl md:text-2xl lg:text-3xl">
                         新規登録
                     </h1>
                     <form onSubmit={handleSubmit}>
@@ -82,10 +82,10 @@ export default function Register() {
                                     type={type}
                                     value={data[name]}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-2 border rounded"
+                                    className="w-full px-4 py-2 border rounded sm:px-3 sm:py-2"
                                 />
                                 {errors[name] && (
-                                    <p className="text-red-500 mt-2">
+                                    <p className="mt-2 text-red-500">
                                         {errors[name][0]}
                                     </p>
                                 )}
@@ -94,19 +94,12 @@ export default function Register() {
                         <div className="flex flex-col items-center">
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-orange-500 text-white rounded mb-4 flex justify-center items-center"
+                                className="flex items-center justify-center px-4 py-2 mb-4 text-white bg-orange-500 rounded"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? (
-                                    <div
-                                        className="animate-spin h-6 w-6 border-4 border-white rounded-full border-t-transparent"
-                                        aria-label="読み込み中"
-                                    ></div>
-                                ) : (
-                                    "新規登録"
-                                )}
+                                {isSubmitting ? <Spinner /> : "新規登録"}
                             </button>
-                            <div className="w-full border-t border-gray-300 mb-4"></div>
+                            <div className="w-full mb-4 border-t border-gray-300"></div>
                             <a href="/login" className="text-blue-500">
                                 ログインはこちら
                             </a>
