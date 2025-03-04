@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const fetchUserId = async (setUserId) => {
+export const fetchUserId = async (setUserId) => {
     const token = localStorage.getItem("token");
     if (token) {
         try {
@@ -13,5 +13,3 @@ const fetchUserId = async (setUserId) => {
         console.log("トークンが見つかりませんでした。");
     }
 };
-
-export default fetchUserId;

@@ -3,6 +3,7 @@ import { Head } from "@inertiajs/react";
 import axios from "axios";
 import HeaderLayout from "../../Layouts/HeaderLayout";
 import Spinner from "../../Components/Spinner";
+import PasswordInput from "../../Components/PasswordInput";
 
 export default function Register() {
     const [data, setData] = useState({
@@ -16,7 +17,7 @@ export default function Register() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 入力フィールドの値を更新する関数
+    // 入力フィールドの値を更新する
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -47,12 +48,6 @@ export default function Register() {
         { name: "userId", label: "ユーザーID", type: "text" },
         { name: "nickname", label: "ニックネーム", type: "text" },
         { name: "email", label: "メールアドレス", type: "email" },
-        { name: "password", label: "パスワード", type: "password" },
-        {
-            name: "password_confirmation",
-            label: "パスワード確認",
-            type: "password",
-        },
     ];
 
     return (
@@ -91,6 +86,35 @@ export default function Register() {
                                 )}
                             </div>
                         ))}
+                        <div className="mb-4">
+                            <label
+                                className="block text-gray-700"
+                                htmlFor="password"
+                            >
+                                パスワード
+                            </label>
+                            <PasswordInput
+                                value={data.password}
+                                onChange={handleChange}
+                                error={errors.password && errors.password[0]}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label
+                                className="block text-gray-700"
+                                htmlFor="password_confirmation"
+                            >
+                                パスワード確認
+                            </label>
+                            <PasswordInput
+                                value={data.password_confirmation}
+                                onChange={handleChange}
+                                error={
+                                    errors.password_confirmation &&
+                                    errors.password_confirmation[0]
+                                }
+                            />
+                        </div>
                         <div className="flex flex-col items-center">
                             <button
                                 type="submit"
