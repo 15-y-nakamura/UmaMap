@@ -7,7 +7,7 @@ export default function ShopLike({ shopId }) {
     const [likeCount, setLikeCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
     const [userId, setUserId] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // 店舗の「うまー！」数を取得する
     const checkShopLike = async () => {
@@ -50,6 +50,7 @@ export default function ShopLike({ shopId }) {
             if (userId) {
                 await checkUserLike(userId);
             }
+            setLoading(false);
         };
         initialize();
     }, [shopId, userId]);
@@ -82,7 +83,9 @@ export default function ShopLike({ shopId }) {
 
     return (
         <div className="flex items-center mb-3 sm:mb-4">
-            {userId ? (
+            {loading ? (
+                <Spinner color="border-orange-500" />
+            ) : userId ? (
                 <button
                     onClick={handleLike}
                     className={`px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 rounded flex items-center justify-center text-xs sm:text-sm md:text-base ${
@@ -95,7 +98,7 @@ export default function ShopLike({ shopId }) {
                     disabled={loading}
                 >
                     {loading ? (
-                        <Spinner />
+                        <Spinner color="border-orange-500" />
                     ) : isLiked ? (
                         <span className="text-black">取り消す</span>
                     ) : (
