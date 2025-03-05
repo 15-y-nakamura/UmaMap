@@ -17,7 +17,6 @@ export default function Register() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 入力フィールドの値を更新する
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -94,6 +93,8 @@ export default function Register() {
                                 パスワード
                             </label>
                             <PasswordInput
+                                id="password"
+                                name="password"
                                 value={data.password}
                                 onChange={handleChange}
                                 error={errors.password && errors.password[0]}
@@ -107,6 +108,8 @@ export default function Register() {
                                 パスワード確認
                             </label>
                             <PasswordInput
+                                id="password_confirmation"
+                                name="password_confirmation"
                                 value={data.password_confirmation}
                                 onChange={handleChange}
                                 error={

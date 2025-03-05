@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-export default function PasswordInput({ value, onChange, error }) {
+export default function PasswordInput({ id, name, value, onChange, error }) {
     const [passwordType, setPasswordType] = useState("password");
 
     return (
         <div className="relative">
             <input
-                id="password"
-                name="password"
+                id={id}
+                name={name}
                 type={passwordType}
                 value={value}
                 onChange={onChange}

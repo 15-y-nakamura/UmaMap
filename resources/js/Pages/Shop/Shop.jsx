@@ -54,7 +54,7 @@ export default function Shop() {
 
     return (
         <>
-            <Head title="ホーム" />
+            <Head title="店舗検索" />
             <HeaderLayout />
             <div className="container mx-auto p-4 flex flex-col gap-4">
                 {/* 検索条件 */}

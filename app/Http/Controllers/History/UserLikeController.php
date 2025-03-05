@@ -13,7 +13,7 @@ class UserLikeController extends Controller
     public function show($user_id)
     {
         try {
-            $userLikes = UserLike::where('user_id', $user_id)->orderBy('created_at', 'asc')->get();
+            $userLikes = UserLike::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
             $apiKey = env('HOTPEPPER_GOURMET_API_KEY');
             $shops = [];
 

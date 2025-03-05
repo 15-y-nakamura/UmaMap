@@ -92,12 +92,6 @@ export default function HeaderLayout() {
                                         label="店舗検索"
                                         img="/img/header/shop.png"
                                     />
-                                    <VerticalDivider />
-                                    <NavItem
-                                        href="/history"
-                                        label="うまー！履歴"
-                                        img="/img/header/uma.png"
-                                    />
                                 </>
                             )}
                         </div>
@@ -156,12 +150,6 @@ export default function HeaderLayout() {
                                     href="/"
                                     label="店舗検索"
                                     img="/img/header/shop.png"
-                                />
-                                <HorizontalDivider />
-                                <NavItem
-                                    href="/history"
-                                    label="うまー！履歴"
-                                    img="/img/header/uma.png"
                                 />
                             </>
                         )}

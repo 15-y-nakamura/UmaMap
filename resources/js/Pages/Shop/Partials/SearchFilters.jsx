@@ -21,18 +21,18 @@ export default function SearchFilters({ onSearch }) {
                         latitude = position.coords.latitude;
                         longitude = position.coords.longitude;
                         await fetchShopData(latitude, longitude); // 店舗データを取得
-                        setLoading(false); // ローディング状態を終了
+                        setLoading(false);
                     },
                     () => {
                         alert(
                             "位置情報が取得できませんでした。設定を確認してください。"
                         );
-                        setLoading(false); // ローディング状態を終了
+                        setLoading(false);
                     }
                 );
             } else {
                 alert("このブラウザでは位置情報が利用できません。");
-                setLoading(false); // ローディング状態を終了
+                setLoading(false);
             }
         } else {
             // 選択された都市の位置情報を使用する場合
@@ -47,10 +47,10 @@ export default function SearchFilters({ onSearch }) {
                 latitude = locationMap[locationChoice].lat;
                 longitude = locationMap[locationChoice].lng;
                 await fetchShopData(latitude, longitude); // 店舗データを取得
-                setLoading(false); // ローディング状態を終了
+                setLoading(false);
             } else {
                 alert("無効なエリアが選択されました。");
-                setLoading(false); // ローディング状態を終了
+                setLoading(false);
             }
         }
     };
@@ -128,7 +128,6 @@ export default function SearchFilters({ onSearch }) {
                         <option value="10001~15000">10001～15000円</option>
                         <option value="15001~20000">15001～20000円</option>
                         <option value="20001~30000">20001～30000円</option>
-                        <option value="30001~">30001円～</option>
                     </select>
                 </div>
 

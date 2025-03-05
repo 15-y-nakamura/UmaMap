@@ -96,22 +96,9 @@ export default function ShopDetail() {
                             <p>サブジャンル: {shop.sub_genre.name}</p>
                         )}
                         <p>{shop.catch}</p>
-                        <div className="flex mb-4">
-                            {/* 昼の予算がある場合のみ表示 */}
-                            {shop.budget?.lunch && (
-                                <div className="p-2 mr-2 text-white bg-orange-500 rounded">
-                                    昼: {shop.budget.lunch}
-                                </div>
-                            )}
-                            {/* 夜の予算がある場合のみ表示 */}
-                            {shop.budget?.dinner && (
-                                <div className="p-2 text-white bg-blue-500 rounded">
-                                    夜: {shop.budget.dinner}
-                                </div>
-                            )}
-                        </div>
+                        <p className="mt-4"></p>
+                        <ShopLike shopId={shopId} userId={userId} />
                     </div>
-                    <ShopLike shopId={shopId} userId={userId} />
                 </div>
                 <div className="pb-4 mb-4 border-b-2 border-orange-500">
                     <h2 className="mb-2 text-xl font-bold text-orange-600">
