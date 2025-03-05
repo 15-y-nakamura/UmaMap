@@ -30,6 +30,11 @@ class User extends Model
         'status' => self::NORMAL_STATUS,
     ];
 
+    public function isValid()
+    {
+        return $this->status === self::NORMAL_STATUS;
+    }
+
     public function user_token()
     {
         return $this->hasOne(UserToken::class);

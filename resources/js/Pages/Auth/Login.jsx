@@ -83,6 +83,8 @@ export default function Login() {
                                 パスワード
                             </label>
                             <PasswordInput
+                                id="password"
+                                name="password"
                                 value={data.password}
                                 onChange={handleChange}
                                 error={errors.password && errors.password[0]}

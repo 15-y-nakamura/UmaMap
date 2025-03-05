@@ -14,8 +14,8 @@ use App\Http\Controllers\ShopDetail\ShopDetailController;
 
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [RegisterController::class, 'register']);
-Route::post('/user-token', [UserTokenController::class, 'userToken']);
 Route::post('/logout', [LogoutController::class, 'logout']);
+Route::post('/user-token', [UserTokenController::class, 'userToken']);
 
 Route::get('/shop', [ShopController::class, 'show']);
 Route::get('/shop/{id}', [ShopDetailController::class, 'show']);

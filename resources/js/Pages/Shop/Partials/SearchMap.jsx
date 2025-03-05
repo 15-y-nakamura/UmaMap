@@ -14,17 +14,17 @@ import { Link } from "@inertiajs/react";
 function getZoomLevel(radius) {
     switch (true) {
         case radius <= 300:
-            return 15;
+            return 16;
         case radius <= 500:
-            return 14;
+            return 15;
         case radius <= 1000:
-            return 13;
+            return 14;
         case radius <= 2000:
-            return 12;
+            return 13;
         case radius <= 3000:
-            return 11;
+            return 12;
         default:
-            return 11;
+            return 12;
     }
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import HeaderLayout from "../../Layouts/HeaderLayout";
 import Spinner from "../../Components/Spinner";
 import LoadingSpinner from "../../Components/LoadingSpinner";
@@ -23,7 +23,6 @@ export default function History() {
         if (userId) {
             fetchUserLikes(userId);
         }
-        setLoading(false); // データ取得が完了したらloadingをfalseに設定
     }, [userId]);
 
     const fetchUserLikes = async (userId) => {
@@ -32,6 +31,8 @@ export default function History() {
             setShops(response.data);
         } catch (error) {
             console.error("うまー！履歴取得エラー:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -129,6 +130,12 @@ export default function History() {
                             <p className="text-sm text-gray-700 sm:text-base">
                                 {shop.open}
                             </p>
+                            <Link
+                                href={`/shop/${shop.id}`}
+                                className="text-blue-500"
+                            >
+                                もっと見る
+                            </Link>
                         </div>
                         <button
                             onClick={() => handleDelete(shop.id)}
